@@ -111,6 +111,12 @@ Get Docker Params
 
 Install VIC Appliance To Test Server
     [Arguments]  ${vic-machine}=bin/vic-machine-linux  ${appliance-iso}=bin/appliance.iso  ${bootstrap-iso}=bin/bootstrap.iso  ${certs}=${true}  ${vol}=default
+    ${status}=  Run Keyword And Return Status  Environment Variable Should Be Set  SNAPSHOT
+    Run Keyword Unless  ${status}  First Install VIC Appliance To Test Server  ${vic-machine}  ${appliance-iso}  ${bootstrap-iso}  ${certs}  ${vol}
+    Run Keyword If  ${status}  Revert To VM Snapshot  %{TEST_HOSTNAME}  %{SNAPSHOT}
+
+First Install VIC Appliance To Test Server
+    [Arguments]  ${vic-machine}=bin/vic-machine-linux  ${appliance-iso}=bin/appliance.iso  ${bootstrap-iso}=bin/bootstrap.iso  ${certs}=${true}  ${vol}=default
     Set Test Environment Variables
     # disable firewall
     Run Keyword If  '%{HOST_TYPE}' == 'ESXi'  Run  govc host.esxcli network firewall set -e false
@@ -125,6 +131,10 @@ Install VIC Appliance To Test Server
     ${output}=  Run VIC Machine Command  ${vic-machine}  ${appliance-iso}  ${bootstrap-iso}  ${certs}  ${vol}
     Log  ${output}
     Get Docker Params  ${output}  ${certs}
+    ${hostname}=  Get Test Server Hostname
+    Set Environment Variable  TEST_HOSTNAME  ${hostname}
+    Set Environment Variable  SNAPSHOT  vic-ci-test-%{DRONE_BUILD_NUMBER}
+    Create VM Snapshot  %{TEST_HOSTNAME}  %{SNAPSHOT}
     Log To Console  Installer completed successfully: ${vch-name}...
 
 Run VIC Machine Command
@@ -470,3 +480,32 @@ Power On VM OOB
     Run Keyword If  '%{HOST_TYPE}' == 'ESXi'  Should Be Equal As Integers  ${rc}  0
     Log To Console  Waiting for VM to power on ...
     Wait Until VM Powers On  ${vm}
+
+Create Test Server Snapshot
+    [Arguments]  ${vm}  ${snapshot}
+    Set Environment Variable  GOVC_URL  %{BUILD_SERVER}
+    ${rc}  ${out}=  Run And Return Rc And Output  govc snapshot.create -vm ${vm} ${snapshot}
+    Should Be Equal As Integers  ${rc}  0
+    Should Be Empty  ${out}
+    Set Environment Variable  GOVC_URL  %{TEST_USERNAME}:%{TEST_PASSWORD}@%{TEST_URL}
+
+Revert Test Server Snapshot
+    [Arguments]  ${vm}  ${snapshot}
+    Set Environment Variable  GOVC_URL  %{BUILD_SERVER}
+    ${rc}  ${out}=  Run And Return Rc And Output  govc snapshot.revert -vm ${vm} ${snapshot}
+    Should Be Equal As Integers  ${rc}  0
+    Should Be Empty  ${out}
+    Set Environment Variable  GOVC_URL  %{TEST_USERNAME}:%{TEST_PASSWORD}@%{TEST_URL}
+
+Delete Test Server Snapshot
+    [Arguments]  ${vm}  ${snapshot}
+    Set Environment Variable  GOVC_URL  %{BUILD_SERVER}
+    ${rc}  ${out}=  Run And Return Rc And Output  govc snapshot.remove -vm ${vm} ${snapshot}
+    Should Be Equal As Integers  ${rc}  0
+    Should Be Empty  ${out}
+    Set Environment Variable  GOVC_URL  %{TEST_USERNAME}:%{TEST_PASSWORD}@%{TEST_URL}
+    
+Get Test Server Hostname
+    [Tags]  secret
+    ${hostname}=  Run  sshpass -p $TEST_PASSWORD ssh $TEST_USERNAME@$TEST_URL hostname
+    [Return]  ${hostname}
