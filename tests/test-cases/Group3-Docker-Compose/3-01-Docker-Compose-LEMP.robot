@@ -13,6 +13,6 @@ Compose LEMP Server
     Run Keyword If  '${status}' == 'closed'  Fail  Test 3-1-Docker-Compose-LEMP.robot needs to be updated now that Issue #2357 has been resolved
     Log  Issue \#2357 is blocking implementation  WARN
     #Run  echo '${yml}' > lemp-compose.yml
-    #${rc}  ${output}=  Run And Return Rc And Output  docker-compose ${params} --file lemp-compose.yml up
+    #${rc}  ${output}=  Run And Return Rc And Output  docker-compose %{VCH-PARAMS} --file lemp-compose.yml up
     #Log  ${output}
     #Should Be Equal As Integers  ${rc}  0

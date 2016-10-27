@@ -1,7 +1,7 @@
 *** Settings ***
 Documentation  Test 5-2 - Cluster
 Resource  ../../resources/Util.robot
-Suite Teardown  Run Keyword And Ignore Error  Nimbus Cleanup
+#Suite Teardown  Run Keyword And Ignore Error  Nimbus Cleanup
 
 *** Test Cases ***
 Test
@@ -52,6 +52,6 @@ Test
     Set Environment Variable  TEST_RESOURCE  cls
     Set Environment Variable  TEST_TIMEOUT  30m
     
-    Install VIC Appliance To Test Server
+    #Install VIC Appliance To Test Server
 
-    Run Regression Tests
+    #Run Regression Tests

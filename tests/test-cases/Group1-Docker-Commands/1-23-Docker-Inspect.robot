@@ -6,44 +6,44 @@ Suite Teardown  Cleanup VIC Appliance On Test Server
 
 *** Test Cases ***
 Simple docker inspect of image
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} pull busybox
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} pull busybox
     Should Be Equal As Integers  ${rc}  0
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} inspect busybox
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} inspect busybox
     Should Be Equal As Integers  ${rc}  0
     ${output}=  Evaluate  json.loads(r'''${output}''')  json
     ${id}=  Get From Dictionary  ${output[0]}  Id
 
 Docker inspect image specifying type
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} inspect --type=image busybox
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} inspect --type=image busybox
     Should Be Equal As Integers  ${rc}  0
     ${output}=  Evaluate  json.loads(r'''${output}''')  json
     ${id}=  Get From Dictionary  ${output[0]}  Id
 
 Docker inspect image specifying incorrect type    
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} inspect --type=container busybox
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} inspect --type=container busybox
     Should Be Equal As Integers  ${rc}  1
     Should Contain  ${output}  Error: No such container: busybox
     
 Simple docker inspect of container
-    ${rc}  ${container}=  Run And Return Rc And Output  docker ${params} create busybox
+    ${rc}  ${container}=  Run And Return Rc And Output  docker %{VCH-PARAMS} create busybox
     Should Be Equal As Integers  ${rc}  0    
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} inspect ${container}
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} inspect ${container}
     Should Be Equal As Integers  ${rc}  0
     ${output}=  Evaluate  json.loads(r'''${output}''')  json
     ${id}=  Get From Dictionary  ${output[0]}  Id
 
 Docker inspect container specifying type
-    ${rc}  ${container}=  Run And Return Rc And Output  docker ${params} create busybox
+    ${rc}  ${container}=  Run And Return Rc And Output  docker %{VCH-PARAMS} create busybox
     Should Be Equal As Integers  ${rc}  0
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} inspect --type=container ${container}
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} inspect --type=container ${container}
     Should Be Equal As Integers  ${rc}  0
     ${output}=  Evaluate  json.loads(r'''${output}''')  json
     ${id}=  Get From Dictionary  ${output[0]}  Id
 
 Docker inspect container check cmd and image name
-    ${rc}  ${container}=  Run And Return Rc And Output  docker ${params} create busybox /bin/bash
+    ${rc}  ${container}=  Run And Return Rc And Output  docker %{VCH-PARAMS} create busybox /bin/bash
     Should Be Equal As Integers  ${rc}  0
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} inspect ${container}
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} inspect ${container}
     Should Be Equal As Integers  ${rc}  0
     ${output}=  Evaluate  json.loads(r'''${output}''')  json
     ${config}=  Get From Dictionary  ${output[0]}  Config
@@ -53,13 +53,13 @@ Docker inspect container check cmd and image name
     Should Be Equal As Strings  ${cmd}  [u'/bin/bash']
 
 Docker inspect container specifying incorrect type
-    ${rc}  ${container}=  Run And Return Rc And Output  docker ${params} create busybox
+    ${rc}  ${container}=  Run And Return Rc And Output  docker %{VCH-PARAMS} create busybox
     Should Be Equal As Integers  ${rc}  0
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} inspect --type=image ${container}
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} inspect --type=image ${container}
     Should Be Equal As Integers  ${rc}  1
     Should Contain  ${output}  Error: No such image: ${container}
     
 Docker inspect invalid object
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} inspect fake
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} inspect fake
     Should Be Equal As Integers  ${rc}  1
     Should Contain  ${output}  Error: No such image or container: fake

@@ -16,7 +16,7 @@ Enable SSH and verify
     Should Be Equal As Integers  ${rc}  0
 
     # check the ssh
-    ${rc}=  Run And Return Rc  ssh -vv -o StrictHostKeyChecking=no -i ${vch-name}.key root@${vch-ip} /bin/true
+    ${rc}=  Run And Return Rc  ssh -vv -o StrictHostKeyChecking=no -i ${vch-name}.key root@%{VCH-IP} /bin/true
     Should Be Equal As Integers  ${rc}  0
 
     # delete the keys

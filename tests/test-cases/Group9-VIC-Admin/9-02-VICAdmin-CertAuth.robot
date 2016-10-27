@@ -8,7 +8,7 @@ Default Tags
 *** Keywords ***
 Curl
     [Arguments]  ${path}
-    ${output}=  Run  curl -sk --cert %{DOCKER_CERT_PATH}/cert.pem --key %{DOCKER_CERT_PATH}/key.pem ${vic-admin}${path}
+    ${output}=  Run  curl -sk --cert %{DOCKER_CERT_PATH}/cert.pem --key %{DOCKER_CERT_PATH}/key.pem %{VIC-ADMIN}${path}
     Should Not Be Equal As Strings  ''  ${output}
     [Return]  ${output}
 
@@ -35,26 +35,26 @@ Get VICAdmin Log
     Should contain  ${output}  Launching vicadmin pprof server
 
 Fail to Get VICAdmin Log without cert
-    ${output}=  Run  curl -sk ${vic-admin}/logs/vicadmin.log
+    ${output}=  Run  curl -sk %{VIC-ADMIN}/logs/vicadmin.log
     Log  ${output}
     Should Not contain  ${output}  Launching vicadmin pprof server
 
 Fail to Display HTML without cert
-    ${output}=  Run  curl -sk ${vic-admin}
+    ${output}=  Run  curl -sk %{VIC-ADMIN}
     Log  ${output}
     Should Not contain  ${output}  <title>VCH ${vch-name}</title>
 
 Fail to get Portlayer Log without cert
-    ${output}=  Run  curl -sk ${vic-admin}/logs/port-layer.log
+    ${output}=  Run  curl -sk %{VIC-ADMIN}/logs/port-layer.log
     Log  ${output}
     Should Not contain  ${output}  Launching portlayer server
 
 Fail to get Docker Personality Log without cert
-    ${output}=  Run  curl -sk ${vic-admin}/logs/docker-personality.log
+    ${output}=  Run  curl -sk %{VIC-ADMIN}/logs/docker-personality.log
     Log  ${output}
     Should Not contain  ${output}  docker personality
 
 Fail to get VCH init logs without cert
-    ${output}=  Run  curl -sk ${vic-admin}/logs/init.log
+    ${output}=  Run  curl -sk %{VIC-ADMIN}/logs/init.log
     Log  ${output}
     Should Not contain  ${output}  reaping child processes

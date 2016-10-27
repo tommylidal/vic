@@ -8,15 +8,15 @@ Test Teardown  Run Keyword If Test Failed  Cleanup VIC Appliance On Test Server
 Initial load
     # Create container VM first
     Log To Console  \nRunning docker pull busybox...
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} pull busybox
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} pull busybox
     Log  ${output}
     Should Be Equal As Integers  ${rc}  0
     Should Not Contain  ${output}  Error
     ${name}=  Generate Random String  15
-    ${rc}  ${container-id}=  Run And Return Rc And Output  docker ${params} create --name ${name} busybox /bin/top
+    ${rc}  ${container-id}=  Run And Return Rc And Output  docker %{VCH-PARAMS} create --name ${name} busybox /bin/top
     Should Be Equal As Integers  ${rc}  0
     Should Not Contain  ${container-id}  Error
-    ${rc}  ${output}=  Run And Return Rc And Output  docker ${params} start ${container-id}
+    ${rc}  ${output}=  Run And Return Rc And Output  docker %{VCH-PARAMS} start ${container-id}
     Should Be Equal As Integers  ${rc}  0
     Should Not Contain  ${output}  Error:
     Set Suite Variable  ${containerName}  ${name}
